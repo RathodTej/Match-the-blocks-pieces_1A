@@ -32,31 +32,33 @@ public class CardLogoHolder : MonoBehaviour
     private void OnMouseDown()
     {
         // Debug.Log(gameObject.name);
-       /* Debug.Log($"{name} should open {StaticManager.toOpen} ,.. " +
-            $"card is open {isOpen} ,.. {gm.cardName} is Tobe open");*/
-
-        if(StaticManager.toOpen)
+        /* Debug.Log($"{name} should open {StaticManager.toOpen} ,.. " +
+             $"card is open {isOpen} ,.. {gm.cardName} is Tobe open");*/
+        if (!StaticManager.isGamePause)
         {
-            if (!isOpen){
-                StaticManager.toOpen = false;
-                OpenCard();
-                isOpen = true;
+            if (StaticManager.toOpen)
+            {
+                if (!isOpen)
+                {
+                    StaticManager.toOpen = false;
+                    OpenCard();
+                    isOpen = true;
+                }
+            }
+            else
+            {
+                if (cardName == gm.cardName && !isOpen)
+                {
+                    StaticManager.toOpen = true;
+                    OpenCard();
+                    isOpen = true;
+                }
+                if (cardName != gm.cardName && !isOpen)
+                {
+                    ShowCard();
+                }
             }
         }
-        else
-        {
-            if (cardName == gm.cardName && !isOpen)
-            {
-                StaticManager.toOpen = true;
-                OpenCard();
-                isOpen = true;
-            }
-            if (cardName != gm.cardName && !isOpen)
-            {
-                ShowCard();
-            }
-        }
-        
         
     }
 

@@ -11,8 +11,14 @@ public class GameManager : MonoBehaviour
     public Transform Board;
     public Transform letsGo;
     public Transform winPanal;
+    public GameObject Audios;
+    public GameObject Selector;
     public Sprite[] sprite;
     public Sprite[] BGsprite;
+
+    public Transform[] Uis;
+
+
     public float doTDuration;
     public float doTDelayTime;
     public string cardName;
@@ -31,20 +37,30 @@ public class GameManager : MonoBehaviour
         cardsCount = Cards.childCount;
         openCardsCount = 0;
         CardSort();
-
+        Board.gameObject.SetActive(false);
+        StaticManager.isGamePause = true;
         Sequence seq = DOTween.Sequence();
 
-        seq.AppendInterval(1.5f);
+        seq.AppendInterval(1f);
         seq.AppendCallback(CardpopUp);
-        seq.AppendInterval(.5f);
+        seq.AppendInterval(5f);
         seq.AppendCallback(CardRotate);
-        seq.AppendInterval(13);
-        seq.AppendCallback(LetsGoPopUp);
-        seq.AppendInterval(2);
+        seq.AppendInterval(1.5f);
         seq.AppendCallback(RandomCardOpen);
+        seq.AppendInterval(1f);
+        seq.AppendCallback(LetsGoPopUp);
+        seq.AppendInterval(.5f);
+        seq.AppendCallback(UiPopUps);
+        seq.AppendInterval(1f);
+        seq.AppendCallback(StartGame);
 
         winPanal.gameObject.SetActive(false);
         StaticManager.isGameOver = false;
+        
+
+
+        Uis[0].localScale = Vector3.zero;
+
     }
 
     // Update is called once per frame
@@ -52,20 +68,31 @@ public class GameManager : MonoBehaviour
     {
         if(openCardsCount == cardsCount && !StaticManager.isGameOver)
         {
+            StaticManager.isGamePause = true;
             Debug.Log("GameOver");
-            StaticManager.isGameOver = true;
-            winPanal.gameObject.SetActive(true);
+            StartCoroutine(GameOverDelay());
         }
+    }
+
+
+    IEnumerator GameOverDelay()
+    {
+        yield return new WaitForSeconds(2);
+        Audios.transform.GetChild(0).gameObject.SetActive(true);
+        StaticManager.isGameOver = true;
+        winPanal.gameObject.SetActive(true);
     }
 
     public void CardpopUp()
     {
-        Sequence seq = DOTween.Sequence();
+        /* Sequence seq = DOTween.Sequence();
 
-        foreach(Transform card in Board)
-        {
-            seq.Append( card.DOScale(new Vector3(.7f, .7f, .7f), doTDuration*.2f));
-        }
+         foreach(Transform card in Board)
+         {
+             seq.Append( card.DOScale(new Vector3(.7f, .7f, .7f), doTDuration*0.7f));
+         }*/
+        Board.gameObject.SetActive(true);
+        Board.DOScale(new Vector3(0,0,0), doTDuration).From();
     }
 
     public void CardRotate()
@@ -74,16 +101,20 @@ public class GameManager : MonoBehaviour
 
         foreach(Transform card in Board)
         {
-            seq.Append(card.DORotate(new Vector3(0, 180, 0), doTDuration*.5f))
+
+            /*seq.Append(card.DORotate(new Vector3(0, 180, 0), doTDuration*.5f))
                 .AppendInterval(doTDelayTime*1.3f)
                 .Append(card.DORotate(new Vector3(0, 0, 0), doTDuration * .5f));
+        */
+           card.DORotate(new Vector3(0, 0, 0), doTDuration);
+
         }
        // Debug.Log("Rotated");
     }    
 
     public void LetsGoPopUp()
     {
-        letsGo.DOScale(new Vector3(3,3,3), doTDuration * 5).SetEase(Ease.InOutFlash)
+        letsGo.DOScale(new Vector3(2.5f,2.5f,2.5f), doTDuration).SetEase(Ease.InOutFlash)
             .OnComplete(()=>
             {
                 letsGo.DOScale(new Vector3(0, 0, 0), doTDuration).SetEase(Ease.InOutFlash);
@@ -111,7 +142,8 @@ public class GameManager : MonoBehaviour
             {
                 y = y - addval;
                 x = -5.24f;
-                card.transform.position = new Vector3(x,y,0);
+                card.transform.position = new Vector3(x,y,0); 
+                //Debug.Log($"{i} plased");
             }
             else
             {
@@ -131,9 +163,27 @@ public class GameManager : MonoBehaviour
         cardName = card.name;
         //Debug.Log("open");
         openCardsCount += 1;
+        Selector.SetActive(true);
+        Selector.transform.SetParent(card);
+        Selector.transform.localPosition = new Vector3(0, 0, 0.1f);
+        
     }
 
+    public void UiPopUps()
+    {
+        
+        Uis[0].DOScale(new Vector3(1, 1, 1), doTDuration*2).SetEase(Ease.OutElastic);
+    }
 
+    public void StartGame()
+    {
+        StaticManager.isGamePause = false;
+    }
+
+    public void GamePause(bool pause)
+    {
+        StaticManager.isGamePause = pause;
+    }
     
 
     public void LoadScene(int scene)
