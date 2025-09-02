@@ -8,6 +8,8 @@ public class StaticManager : MonoBehaviour
     public static bool isGamePause = true;
     public static bool isGameOver = false;
 
+    public static string levelName = "NA";
+   // public static string levelName1 = "NA";
     
         
 }

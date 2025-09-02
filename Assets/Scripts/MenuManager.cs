@@ -14,7 +14,10 @@ public class MenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(BGsprit !=null)
         BGsprit.sprite = sprit[(int)Random.Range(0, sprit.Length)];
+
+
     }
 
     // Update is called once per frame
@@ -24,6 +27,12 @@ public class MenuManager : MonoBehaviour
     
     }
 
+    public void GetLevelData(string levelName)
+    {
+        StaticManager.levelName = levelName;
+
+       // StaticManager.levelName1 = gameObject.name;
+    }
 
     public void LoadScene(int scene)
     {

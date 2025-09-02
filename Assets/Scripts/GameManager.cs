@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 
 
         Uis[0].localScale = Vector3.zero;
-
+        Debug.Log(StaticManager.levelName);
     }
 
     // Update is called once per frame
